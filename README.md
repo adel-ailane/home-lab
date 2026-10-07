@@ -14,7 +14,7 @@ Docker-based home lab using Docker Compose, Caddy, dnsmasq, Vaultwarden, Portain
 Copy the environment template:
 
 ```bash
-cp .env.example .env
+cp example.env .env
 ````
 
 Edit `.env` with your DuckDNS details:
