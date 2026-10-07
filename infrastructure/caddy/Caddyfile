@@ -1,0 +1,18 @@
+{
+    admin 0.0.0.0:2019
+}
+
+*.{env.DOMAIN} {
+    tls {
+        dns duckdns {env.DUCKDNS_API_TOKEN}
+    }
+
+    @portainer host portainer.{env.DOMAIN}
+    reverse_proxy @portainer portainer:80
+
+    @vaultwarden host vault.{env.DOMAIN}
+    reverse_proxy @vaultwarden vaultwarden:80
+
+    @immich host immich.{env.DOMAIN}
+    reverse_proxy @immich immich:80
+}

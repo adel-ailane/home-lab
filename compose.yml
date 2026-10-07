@@ -1,0 +1,79 @@
+services:
+
+  # -------------------------
+  # Infrastructure
+  # -------------------------
+
+  caddy:
+    build:
+      context: .
+      dockerfile: ./infrastructure/caddy/Dockerfile
+    container_name: caddy
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      - DUCKDNS_API_TOKEN=${DUCKDNS_API_TOKEN}
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - ./infrastructure/caddy/config:/config
+      - ./infrastructure/caddy/data:/data
+      - ./infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+
+    networks:
+      - proxy
+
+  dnsmasq:
+    image: dockurr/dnsmasq
+    network_mode: host
+    container_name: dnsmasq
+    restart: unless-stopped
+    volumes:
+      - ./infrastructure/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
+
+  # -------------------------
+  # Services
+  # -------------------------
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+
+    env_file:
+      - .env
+    environment:
+      DOMAIN: vault.${DOMAIN}
+    volumes:
+      - ./services/vaultwarden/data:/data
+    networks:
+      - proxy
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+
+    env_file:
+      - .env
+
+    environment:
+      - TRUSTED_ORIGINS=https://portainer.${DOMAIN}
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./services/portainer/data:/data
+    networks:
+      - proxy
+
+  # Immich and its dependencies...
+
+networks:
+  proxy:
+

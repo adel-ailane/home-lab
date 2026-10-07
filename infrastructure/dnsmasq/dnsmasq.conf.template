@@ -1,0 +1,27 @@
+# Listen for DNS queries
+port=53
+
+# Listen on all interfaces
+#interface=tailscale0
+#interface=wlan0
+#interface=eth0
+interface=enp1s0
+interface=docker0
+bind-dynamic
+
+# Local homelab wildcard
+address=/.exemple.duckdns.org/192.168.1.100
+
+# Don't forward local names
+domain-needed
+bogus-priv
+
+# Router - resolves local LAN hostnames
+server=192.168.1.254
+
+# Upstream DNS
+server=1.1.1.1
+server=1.0.0.1
+
+# Cache
+cache-size=1000
